@@ -5,7 +5,7 @@
  */
 
 #include <zephyr/logging/log.h>
-LOG_MODULE_REGISTER(app_buzzer, LOG_LEVEL_DBG);
+LOG_MODULE_REGISTER(app_pwm, LOG_LEVEL_DBG);
 
 #include <stdlib.h>
 #include <zephyr/device.h>

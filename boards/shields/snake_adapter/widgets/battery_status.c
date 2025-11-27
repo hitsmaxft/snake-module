@@ -7,7 +7,9 @@
 #include <zephyr/kernel.h>
 #include <zephyr/device.h>
 #include <zephyr/drivers/display.h>
+#if IS_ENABLED(CONFIG_ZMK_BLE)
 #include <zephyr/bluetooth/services/bas.h>
+#endif
 
 #include <zephyr/logging/log.h>
 LOG_MODULE_DECLARE(zmk, CONFIG_ZMK_LOG_LEVEL);
@@ -15,7 +17,9 @@ LOG_MODULE_DECLARE(zmk, CONFIG_ZMK_LOG_LEVEL);
 #include <zmk/display.h>
 #include <zmk/display/widgets/battery_status.h>
 #include <zmk/usb.h>
+#if IS_ENABLED(CONFIG_ZMK_BLE)
 #include <zmk/ble.h>
+#endif
 #include <zmk/events/usb_conn_state_changed.h>
 #include <zmk/event_manager.h>
 #include <zmk/events/battery_state_changed.h>
@@ -162,6 +166,7 @@ void battery_status_update_cb(struct peripheral_battery_state state) {
     }
 }
 
+#if IS_ENABLED(CONFIG_ZMK_BLE)
 static struct peripheral_battery_state battery_status_get_state(const zmk_event_t *eh) {
     const struct zmk_peripheral_battery_state_changed *ev = as_zmk_peripheral_battery_state_changed(eh);
     return (struct peripheral_battery_state){
@@ -174,6 +179,7 @@ ZMK_DISPLAY_WIDGET_LISTENER(widget_battery_status, struct peripheral_battery_sta
                             battery_status_update_cb, battery_status_get_state)
 
 ZMK_SUBSCRIPTION(widget_battery_status, zmk_peripheral_battery_state_changed);
+#endif
 
 void print_empty_batteries() {
     #ifdef CONFIG_SHOW_SINGLE_BATTERY
@@ -188,8 +194,10 @@ void zmk_widget_peripheral_battery_status_init() {
     uint16_t bitmap_size = (font_width * scale) * (font_height * scale);
 
     scaled_bitmap_1 = k_malloc(bitmap_size * 2 * sizeof(uint16_t));
-    
+
+#if IS_ENABLED(CONFIG_ZMK_BLE)
     widget_battery_status_init();
+#endif
 }
 
 void initialize_battery_status() {

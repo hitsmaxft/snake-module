@@ -1696,6 +1696,12 @@ uint32_t darken_color(uint32_t rgb, float percentage) {
 }
 
 void display_write_wrapper(uint16_t x, uint16_t y, struct display_buffer_descriptor *buf_desc, uint8_t *buf) {
+    // Debug logging to trace the assertion failure
+    LOG_DBG("display_write: x=%u, y=%u, pitch=%u, width=%u, height=%u, buf_size=%u",
+            x, y, buf_desc->pitch, buf_desc->width, buf_desc->height, buf_desc->buf_size);
+    LOG_DBG("assertion check: (pitch * 2 * height) = %u <= buf_size = %u ? %s",
+            buf_desc->pitch * 2u * buf_desc->height, buf_desc->buf_size,
+            (buf_desc->pitch * 2u * buf_desc->height <= buf_desc->buf_size) ? "PASS" : "FAIL");
     display_write(display_dev, x, y, buf_desc, buf);
 }
 
@@ -1705,11 +1711,51 @@ void init_display(void) {
 		LOG_ERR("Device %s not found. Aborting sample.", display_dev->name);
 		return;
 	}
+	LOG_INF("Display device %s initialized successfully", display_dev->name);
+
+	// Enable backlight - call the existing function
+	LOG_INF("Initializing backlight...");
+	extern void set_display_brightness(void);
+	set_display_brightness();
+	LOG_INF("Backlight initialized");
 
     screen_width = 20;
     screen_height = 20;
     buf_screen_size = screen_width * screen_height * 2u;
 	buf_screen_area = k_malloc(buf_screen_size);
+
+	// Test pattern: Draw a simple pattern to verify display works
+	LOG_INF("Drawing test patterns to verify display functionality...");
+
+	// Test 1: Small red square in top-left
+	uint8_t *test_buf = k_malloc(50 * 50 * 2u);
+	struct display_buffer_descriptor test_desc = {
+		.buf_size = 50 * 50 * 2u,
+		.width = 50,
+		.height = 50,
+		.pitch = 50
+	};
+	fill_buffer_color(test_buf, test_desc.buf_size, 0xF800);  // Red
+	display_write(display_dev, 0, 0, &test_desc, test_buf);
+	LOG_INF("Red square drawn at (0,0)");
+
+	// Test 2: Green square in top-right
+	fill_buffer_color(test_buf, test_desc.buf_size, 0x07E0);  // Green
+	display_write(display_dev, 190, 0, &test_desc, test_buf);
+	LOG_INF("Green square drawn at (190,0)");
+
+	// Test 3: Blue square in bottom-left
+	fill_buffer_color(test_buf, test_desc.buf_size, 0x001F);  // Blue
+	display_write(display_dev, 0, 190, &test_desc, test_buf);
+	LOG_INF("Blue square drawn at (0,190)");
+
+	// Test 4: White square in bottom-right
+	fill_buffer_color(test_buf, test_desc.buf_size, 0xFFFF);  // White
+	display_write(display_dev, 190, 190, &test_desc, test_buf);
+	LOG_INF("White square drawn at (190,190)");
+
+	k_free(test_buf);
+	LOG_INF("All test patterns drawn - should see colored squares at corners");
 }
 
 uint32_t hex_string_to_uint(const char *hex_str) {
@@ -1796,7 +1842,7 @@ void render_bitmap(uint16_t *scaled_bitmap, uint16_t bitmap[], uint16_t x, uint1
             }
         }
     }
-	buf_font_desc.buf_size = font_buf_size_scaled;
+	buf_font_desc.buf_size = font_buf_size_scaled * 2u;  // 2 bytes per pixel for 16-bit display
 	buf_font_desc.pitch = font_width_scaled;
 	buf_font_desc.width = font_width_scaled;
 	buf_font_desc.height = font_height_scaled;
@@ -1918,7 +1964,7 @@ void print_line_horizontal(uint8_t *buf_frame, uint16_t start_x, uint16_t end_x,
 
     uint16_t horizontal_line_len = end_x - start_x + scale;
 
-    horizontal_line_desc.buf_size = horizontal_line_len * scale;
+    horizontal_line_desc.buf_size = horizontal_line_len * scale * 2u;  // 2 bytes per pixel for 16-bit display
 	horizontal_line_desc.pitch = horizontal_line_len;
 	horizontal_line_desc.width = horizontal_line_len;
 	horizontal_line_desc.height = scale;
@@ -1933,7 +1979,7 @@ void print_line_vertical(uint8_t *buf_frame, uint16_t start_x, uint16_t end_x, u
 
     uint16_t vertical_line_len = end_y - start_y + scale;
 
-    vertical_line_desc.buf_size = vertical_line_len * scale;
+    vertical_line_desc.buf_size = vertical_line_len * scale * 2u;  // 2 bytes per pixel for 16-bit display
 	vertical_line_desc.pitch = scale;
 	vertical_line_desc.width = scale;
 	vertical_line_desc.height = vertical_line_len;

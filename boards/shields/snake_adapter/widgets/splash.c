@@ -112,6 +112,7 @@ void print_splash(void) {
 void buffer_gap_splash_init() {
 	buf_size_gap_splash = gap_width * gap_height * 2u;
 	buf_gap_splash = k_malloc(buf_size_gap_splash);
+	buf_desc_gap_splash.buf_size = buf_size_gap_splash;
 	buf_desc_gap_splash.pitch = gap_width;
 	buf_desc_gap_splash.width = gap_width;
 	buf_desc_gap_splash.height = gap_height;
@@ -129,6 +130,7 @@ void buffer_splash_snake_init() {
 void buffer_background_splash_init() {
 	buf_size_background_splash = background_pixel_width * background_pixel_height * 2u;
 	buf_background_splash = k_malloc(buf_size_background_splash);
+	buf_desc_background_splash.buf_size = buf_size_background_splash;
 	buf_desc_background_splash.pitch = background_pixel_width;
 	buf_desc_background_splash.width = background_pixel_width;
 	buf_desc_background_splash.height = background_pixel_height;
@@ -270,6 +272,7 @@ void print_splash(void) {
 void buffer_gap_splash_init() {
 	buf_size_gap_splash = gap_width * gap_height * 2u;
 	buf_gap_splash = k_malloc(buf_size_gap_splash);
+	buf_desc_gap_splash.buf_size = buf_size_gap_splash;
 	buf_desc_gap_splash.pitch = gap_width;
 	buf_desc_gap_splash.width = gap_width;
 	buf_desc_gap_splash.height = gap_height;
@@ -279,6 +282,7 @@ void buffer_gap_splash_init() {
 void buffer_gap1_splash_init() {
 	buf_size_gap1_splash = gap1_width * gap1_height * 2u;
 	buf_gap1_splash = k_malloc(buf_size_gap1_splash);
+	buf_desc_gap1_splash.buf_size = buf_size_gap1_splash;
 	buf_desc_gap1_splash.pitch = gap1_width;
 	buf_desc_gap1_splash.width = gap1_width;
 	buf_desc_gap1_splash.height = gap1_height;
@@ -292,6 +296,7 @@ void buffer_splash_snake_init() {
 void buffer_background_splash_init() {
 	buf_size_background_splash = background_pixel_width * background_pixel_height * 2u;
 	buf_background_splash = k_malloc(buf_size_background_splash);
+	buf_desc_background_splash.buf_size = buf_size_background_splash;
 	buf_desc_background_splash.pitch = background_pixel_width;
 	buf_desc_background_splash.width = background_pixel_width;
 	buf_desc_background_splash.height = background_pixel_height;

@@ -9,7 +9,7 @@
 
 #include <stdlib.h>
 #include <zephyr/logging/log.h>
-LOG_MODULE_REGISTER(sample, LOG_LEVEL_INF);
+LOG_MODULE_REGISTER(snake_widget, LOG_LEVEL_INF);
 
 #include <zephyr/kernel.h>
 #include <zephyr/bluetooth/services/bas.h>
@@ -600,6 +600,7 @@ void color_buffer_init() {
 	buf_color_5 = k_malloc(buf_color_size);
 	buf_color_6 = k_malloc(buf_color_size);
     buf_food_color = k_malloc(buf_color_size);
+	buf_color_desc.buf_size = buf_color_size;
 	buf_color_desc.pitch = snake_pixel_size;
 	buf_color_desc.width = snake_pixel_size;
 	buf_color_desc.height = snake_pixel_size;
@@ -616,6 +617,7 @@ void color_buffer_init() {
 void white_buffer_init() {
 	buf_white_size = snake_pixel_size * snake_pixel_size * 2u;
 	buf_white = k_malloc(buf_white_size);
+	buf_white_desc.buf_size = buf_white_size;
 	buf_white_desc.pitch = snake_pixel_size;
 	buf_white_desc.width = snake_pixel_size;
 	buf_white_desc.height = snake_pixel_size;
@@ -625,6 +627,7 @@ void white_buffer_init() {
 void buffer_board_1_init() {
 	buf_board_1_size = snake_pixel_size * snake_pixel_size * 2u;
 	buf_board_1 = k_malloc(buf_board_1_size);
+	buf_board_1_desc.buf_size = buf_board_1_size;
 	buf_board_1_desc.pitch = snake_pixel_size;
 	buf_board_1_desc.width = snake_pixel_size;
 	buf_board_1_desc.height = snake_pixel_size;
@@ -634,6 +637,7 @@ void buffer_board_1_init() {
 void buffer_init() {
 	buf_size = snake_pixel_size * snake_pixel_size * 2u;
 	buf = k_malloc(buf_size);
+	buf_desc.buf_size = buf_size;
 	buf_desc.pitch = snake_pixel_size;
 	buf_desc.width = snake_pixel_size;
 	buf_desc.height = snake_pixel_size;

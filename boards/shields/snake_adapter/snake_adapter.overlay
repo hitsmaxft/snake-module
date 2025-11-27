@@ -99,8 +99,8 @@
 		compatible = "sitronix,st7789v";
 		spi-max-frequency = <20000000>;
 		reg = <0>;
-		cmd-data-gpios = <&gpio0 24 GPIO_ACTIVE_LOW>;
 		reset-gpios = <&gpio0 22 GPIO_ACTIVE_LOW>;
+		cmd-data-gpios = <&gpio0 24 GPIO_ACTIVE_LOW>;
 		width = <240>;
 		height = <240>;
 		x-offset = <0>;

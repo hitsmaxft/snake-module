@@ -14,12 +14,14 @@ LOG_MODULE_DECLARE(zmk, CONFIG_ZMK_LOG_LEVEL);
 
 #include <zmk/display.h>
 #include <zmk/event_manager.h>
-#include <zmk/events/ble_active_profile_changed.h>
 #include <zmk/events/endpoint_changed.h>
 #include <zmk/events/usb_conn_state_changed.h>
 #include <zmk/usb.h>
-#include <zmk/ble.h>
 #include <zmk/endpoints.h>
+#if IS_ENABLED(CONFIG_ZMK_BLE)
+#include <zmk/events/ble_active_profile_changed.h>
+#include <zmk/ble.h>
+#endif
 
 #include "output_status.h"
 #include "helpers/display.h"
@@ -201,9 +203,15 @@ void print_bitmap_status(uint16_t *scaled_bitmap, Status s, uint16_t x, uint16_t
 static struct output_status_state get_state(const zmk_event_t *_eh) {
     return (struct output_status_state){
         .selected_endpoint = zmk_endpoints_selected(),
+#if IS_ENABLED(CONFIG_ZMK_BLE)
         .active_profile_index = zmk_ble_active_profile_index(),
         .active_profile_connected = zmk_ble_active_profile_is_connected(),
         .active_profile_bonded = !zmk_ble_active_profile_is_open(),
+#else
+        .active_profile_index = 0,
+        .active_profile_connected = false,
+        .active_profile_bonded = false,
+#endif
         .usb_is_hid_ready = zmk_usb_is_hid_ready()
     };
 }
@@ -264,7 +272,9 @@ void output_status_update_cb(struct output_status_state state) {
 ZMK_DISPLAY_WIDGET_LISTENER(widget_output_status, struct output_status_state,
                             output_status_update_cb, get_state)
 ZMK_SUBSCRIPTION(widget_output_status, zmk_endpoint_changed);
+#if IS_ENABLED(CONFIG_ZMK_BLE)
 ZMK_SUBSCRIPTION(widget_output_status, zmk_ble_active_profile_changed);
+#endif
 ZMK_SUBSCRIPTION(widget_output_status, zmk_usb_conn_state_changed);
 
 
