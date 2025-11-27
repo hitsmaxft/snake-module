@@ -1,0 +1,68 @@
+# CMakeLists for Circular UI Integration
+# This file should be included in the main CMakeLists.txt
+
+# Add circular UI sources
+zephyr_library_named(circular_ui)
+zephyr_library_sources(circular_ui PRIVATE
+    widgets/circular/circular_layout.c
+    widgets/circular/circular_rings.c
+    widgets/circular/circular_speed.c
+    widgets/circular/circular_battery.c
+    widgets/circular/circular_ble_status.c
+    widgets/circular/circular_ui.c
+    circular_status_screen.c
+    circular_custom_status_screen.c
+)
+
+# Add circular UI headers
+target_include_directories(circular_ui PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}
+    ${CMAKE_CURRENT_SOURCE_DIR}/widgets/circular
+    ${CMAKE_CURRENT_SOURCE_DIR}/widgets/helpers
+)
+
+# Link with required ZMK libraries
+target_link_libraries(circular_ui PRIVATE
+    zmk
+    zmk_display
+    lvgl
+)
+
+# Add compile definitions for circular UI
+target_compile_definitions(circular_ui PRIVATE
+    -DCONFIG_CIRCULAR_UI_ENABLED=1
+    -DCONFIG_CIRCULAR_UI_SPEED_FOCUSED=1
+    -DCONFIG_CIRCULAR_UI_BATTERY_MONITORING=1
+    -DCONFIG_CIRCULAR_UI_BLE_STATUS=1
+    -DCONFIG_CIRCULAR_UI_EXPERIMENTAL_FEATURES=1
+)
+
+# Conditionally include circular UI based on config
+if(CONFIG_CIRCULAR_UI_ENABLED)
+    target_sources(zmk PRIVATE circular_custom_status_screen.c)
+
+    # Override original status screen
+    target_compile_definitions(zmk PRIVATE
+        -DCONFIG_ZMK_CUSTOM_STATUS_SCREEN=1
+    )
+
+    message(STATUS "Circular UI enabled for zmk-snake-module")
+else()
+    target_sources(zmk PRIVATE custom_status_screen.c)
+    message(STATUS "Original status screen enabled")
+endif()
+
+# Performance optimizations
+target_compile_options(circular_ui PRIVATE
+    -Os  # Optimize for size
+    -ffunction-sections
+    -fdata-sections
+    -fomit-frame-pointer
+)
+
+# Enable debug builds if needed
+if(CONFIG_LOG_CIRCULAR_UI)
+    target_compile_options(circular_ui PRIVATE
+        -Og  # Optimize for debugging
+    )
+endif()
